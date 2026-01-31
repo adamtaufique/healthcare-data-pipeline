@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: bronze
+    tables:
+      - name: patients
+        description: "Bronze patient demographics"
+      
+      - name: encounters
+        description: "Bronze encounter records"
+      
+      - name: diagnoses
+        description: "Bronze diagnosis records"
+      
+      - name: procedures
+        description: "Bronze procedure records"
