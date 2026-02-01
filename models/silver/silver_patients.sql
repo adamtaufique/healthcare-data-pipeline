@@ -1,7 +1,8 @@
--- models/silver/silver_patients.sql
-
 {{ config(
-    materialized='table'
+    materialized='table',
+    database='workspace',
+    schema='silver',
+    pre_hook="USE CATALOG workspace"
 ) }}
 
 SELECT
@@ -10,11 +11,25 @@ SELECT
     UPPER(TRIM(first_name)) as first_name,
     UPPER(TRIM(last_name)) as last_name,
     date_of_birth,
-    age_years,
-    age_group,
     gender,
     zip_code,
+    phone,
+    email,
+    
+    -- Calculate age_years (not in Bronze)
+    YEAR(CURRENT_DATE()) - YEAR(date_of_birth) as age_years,
+    
+    -- Calculate age_group (not in Bronze)
+    CASE 
+        WHEN YEAR(CURRENT_DATE()) - YEAR(date_of_birth) < 18 THEN 'Pediatric'
+        WHEN YEAR(CURRENT_DATE()) - YEAR(date_of_birth) < 65 THEN 'Adult'
+        ELSE 'Senior'
+    END as age_group,
+    
+    -- Metadata
     _ingested_at,
+    _source_file,
     CURRENT_TIMESTAMP() as _transformed_at
-FROM {{ source('bronze', 'patients') }}
+    
+FROM workspace.bronze.patients
 WHERE patient_id IS NOT NULL

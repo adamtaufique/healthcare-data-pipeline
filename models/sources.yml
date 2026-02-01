@@ -6,6 +6,7 @@ sources:
     schema: bronze
     tables:
       - name: patients
+        identifier: patients
         description: "Bronze patient demographics"
       
       - name: encounters
